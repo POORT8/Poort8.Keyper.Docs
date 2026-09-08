@@ -92,6 +92,8 @@ Maak een approval-link aan met flow `dvu.voeg-gebouw-toe@v1` (één gebouw) of `
 
 De payload bevat het adres (postcode + huisnummer als één string) en `dataServiceConsumer`: het organisatie-ID van je eigen organisatie (de consumer die na goedkeuring de data mag ophalen). Het organisatie-ID is een iSHARE-DID volgens de conventie `did:ishare:EU.NL.NTRNL-<KvK>`.
 
+Je kunt optioneel een `description` meegeven op de approval-link. De inhoud hiervan wordt getoond aan de data-rechthebbende bij het goedkeuren, onder het kopje "Wat kan `<dataServiceConsumer>` doen?". Gebruik dit veld om toe te lichten waarvoor de data-toegang gebruikt gaat worden — dit helpt de data-rechthebbende om een geïnformeerde keuze te maken.
+
 ```http
 POST https://keyper-preview.poort8.nl/v1/api/approval-links
 Authorization: Bearer <ACCESS_TOKEN>
@@ -117,6 +119,7 @@ Content-Type: application/json
     "baseUrl": "https://dvu-preview.poort8.nl"
   },
   "reference": "<UNIQUE_REFERENCE>",
+  "description": "<OPTIONAL_DESCRIPTION>",
   "orchestration": {
     "flow": "dvu.voeg-gebouw-toe@v1",
     "payload": {
@@ -146,6 +149,7 @@ Content-Type: application/json
     "baseUrl": "https://dvu-preview.poort8.nl"
   },
   "reference": "<UNIQUE_REFERENCE>",
+  "description": "<OPTIONAL_DESCRIPTION>",
   "orchestration": {
     "flow": "dvu.voeg-gebouwen-toe@v1",
     "payload": {
