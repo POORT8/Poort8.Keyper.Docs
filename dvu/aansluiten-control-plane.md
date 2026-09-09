@@ -355,9 +355,46 @@ Zie [Aansluiten als dataservice consumer – Energiedata opvragen](aansluiten-da
 
 ## Policies en resource groups bijwerken of verwijderen
 
-Een bestaande policy werk je bij of verwijder je via de policy-endpoints in de [DVU API documentatie ➚](<https://dvu-preview.poort8.nl/scalar/v1>) (Scalar), bijvoorbeeld om de `notBefore` of `expiration` aan te passen.
+Een bestaande policy kan worden ingetrokken of in geldigheid worden aangepast. Daarvoor gebruik je de reguliere policy-endpoints; hiervoor bestaan géén delegated varianten. Ze staan wel in de [DVU API documentatie ➚](<https://dvu-preview.poort8.nl/scalar/v1>) (Scalar).
 
-Bij het verwijderen gelden deze functionele regels:
+### Toestemming intrekken
+
+Trek de policy in wanneer de data-rechthebbende zijn toestemming intrekt, dit kan alleen zolang de huidige `expiration` nog in de toekomst ligt. De policy blijft bestaan, maar de geldigheid eindigt direct.
+
+```http
+POST https://dvu-preview.poort8.nl/v1/api/policies/<POLICY_ID>/revoke
+Authorization: Bearer <ACCESS_TOKEN>
+Content-Type: application/json
+```
+
+```json
+{
+  "reason": "<Reden van intrekking>"
+}
+```
+
+### Geldigheid aanpassen
+
+Pas `notBefore` en/of `expiration` aan om een toestemming te verlengen of eerder te laten eindigen. Minimaal één van de twee velden moet je meegeven; de overige policy-velden blijven ongemoeid. Een veld kun je alleen wijzigen zolang de huidige waarde nog in de toekomst ligt, en de nieuwe waarde mag niet vóór nu liggen. Een verlopen policy kun je dus niet verlengen — moet de toegang opnieuw worden verleend, maak dan een nieuwe policy aan (met opnieuw de toestemming van de data-rechthebbende) en rond die registratie af via de DRS.
+
+```http
+PUT https://dvu-preview.poort8.nl/v1/api/policies/<POLICY_ID>/validity
+Authorization: Bearer <ACCESS_TOKEN>
+Content-Type: application/json
+```
+
+```json
+{
+  "notBefore": <UNIX_TIMESTAMP_NOTBEFORE>,
+  "expiration": <UNIX_TIMESTAMP_EXPIRATION>
+}
+```
+
+### Verwijderen
+
+Een policy kan ook volledig worden verwijderd via `DELETE /v1/api/policies/<POLICY_ID>`. Gebruik voor het intrekken van een toestemming echter `/revoke`: de policy blijft dan traceerbaar in het register terwijl de toegang direct stopt.
+
+Bij het verwijderen van resource groups gelden deze functionele regels:
 
 - Een resource group is gekoppeld aan de issuer (de data-rechthebbende); resource groups van andere partijen spelen hierbij geen rol.
 - Een resource group mag zonder actieve policy blijven bestaan, bijvoorbeeld om een overzicht van beschikbare gebouwen te tonen.
