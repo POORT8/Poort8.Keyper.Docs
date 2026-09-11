@@ -2,6 +2,39 @@
 
 All notable customer-visible changes to the Poort8 NoodleBar, Keyper and the API's are listed in this weekly changelog.
 
+## 2026-09-08
+
+**✨ Highlights:** Keyper approval-link writes now reject empty transaction payloads, and the NoodleBar API reference now points to the configured Keycloak realm and scope instead of test values.
+
+### NoodleBar
+
+#### Changed
+
+- The OpenAPI security definition for NoodleBar now publishes the configured Keycloak client-credentials token endpoint and requires the `noodlebar-api` scope instead of the old test-only values. Regenerate OpenAPI-based clients or update token acquisition examples to request tokens from your dataspace realm. [#1313](https://github.com/POORT8/Poort8.Dataspace.Private/pull/1313)
+
+### Keyper
+
+#### Changed
+
+- `POST /v1/api/approval-links` now rejects requests that do not contain any approval transaction payload for normal orchestration flows. Provide at least one of `addPolicyTransactions`, `policyValidityUpdates`, `policyRevokes`, `addResourceGroupTransactions`, `addEmployeeToOrganizationTransactions`, or `addOROrganizationTransaction`. The DVU building flows (`dvu.voeg-gebouwen-toe@v1`, `dvu.voeg-gebouw-toe@v1`) remain exempt. [#1307](https://github.com/POORT8/Poort8.Dataspace.Private/pull/1307)
+- `PUT /v1/api/approval-links/{id}` now rejects updates that would leave a non-DVU approval link without any transactions after the patch is applied. [#1307](https://github.com/POORT8/Poort8.Dataspace.Private/pull/1307)
+
+## 2026-09-01
+
+**✨ Highlights:** Validation-error responses are now documented with a concrete problem-details schema across several NoodleBar and Keyper operations.
+
+### NoodleBar
+
+#### Fixed
+
+- The OpenAPI reference now documents `400 Bad Request` responses as `application/problem+json` with the `FastEndpointsErrorResponse` schema for `GET /v1/api/organization-registry`, `POST|PUT /v1/api/policies`, `POST|PUT /v1/api/resourcegroups`, and `POST /v1/api/resources`. OpenAPI-generated clients can now model validation failures consistently for these operations. [#1279](https://github.com/POORT8/Poort8.Dataspace.Private/pull/1279)
+
+### Keyper
+
+#### Fixed
+
+- `POST /v1/api/approval-links` now documents validation failures as `application/problem+json` with the `FastEndpointsErrorResponse` schema, aligning the published contract with the existing runtime behavior. [#1279](https://github.com/POORT8/Poort8.Dataspace.Private/pull/1279)
+
 ## 2026-08-28
 
 **✨ Highlights:** Keyper approval links can now include policy revocations and validity updates alongside new policy grants, enabling richer consent workflows in a single approval step.
